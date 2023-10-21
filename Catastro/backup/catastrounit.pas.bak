@@ -1,0 +1,63 @@
+Unit unitterreno;
+
+interface
+const ruta1 = 'C:\UTN\Primer año\Algoritmos y estructuras de datos\TpCatastro\propietarios.dat';
+  ruta2 = 'C:\UTN\Primer año\Algoritmos y estructuras de datos\TpCatastro\terrenos.dat';
+
+type p_dato = record
+              n_contrib: string[10];
+              apellido: string[50];
+              nombre: string[50];
+              direccion: string[50];
+              ciudad: string[50];
+              dni: string[8];
+              fecha_n: string[10];
+              tel: string[10];
+              email: string[20];
+              estado: boolean;
+              end;
+p_archivo = file of p_dato;
+t_dato = record
+         n_contrib: string[10];
+         plano: string[10];
+         fecha: string[10];
+         avaluo: real;
+         domicilio_p: string[50];
+         superficie: real;
+         zona: 1..5;
+         edificacion: 1..5;
+         end;
+t_archivo = file of t_dato;
+
+
+implementation
+
+procedure abrirt(var arch:t_archivo);
+begin
+    assign(arch, ruta2);
+    reset(arch);
+end;
+
+procedure ordenar_t(var arch:t_archivo: var x:t_dato);
+var aux:t_dato; i,j:integer;
+begin
+    abrirt(arch);
+    seek(arch, 0);
+    while not(EOF(arch)) do
+    begin
+      read(arch, aux);
+      if aux
+      end;
+end;
+
+procedure agregar_t(var arch: t_archivo; x:t_dato);
+ var enc: boolean;
+ aux: t_dato;
+begin
+
+end;
+
+begin
+
+end.
+

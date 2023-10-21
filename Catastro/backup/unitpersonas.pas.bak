@@ -1,0 +1,27 @@
+unit unitpersonas;
+
+
+
+interface
+uses Classes, SysUtils;
+const ruta1 = 'C:\UTN\Primer año\Algoritmos y estructuras de datos\TpCatastro\propietarios.dat';
+
+type p_dato = record
+              n_contrib: string[10];
+              apellido: string[50];
+              nombre: string[50];
+              direccion: string[50];
+              ciudad: string[50];
+              dni: string[8];
+              fecha_n: string[10];
+              tel: string[10];
+              email: string[20];
+              estado: boolean;
+              end;
+p_archivo = file of p_dato;
+
+implementation
+
+
+end.
+

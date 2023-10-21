@@ -1,0 +1,88 @@
+unit unitarbolpersonas;
+
+interface
+uses
+  crt, unitpersonas;
+  type
+  pa_punt = ^pa_nodo;
+  pa_nodo = record
+            info: p_dato;
+            pos_r:byte;
+            sai, sad: pa_punt;
+  end;
+
+procedure agregar_adni(var raiz:pa_punt; x:p_dato);
+procedure agregar_ana(var raiz:pa_punt; x : p_dato);
+procedure crear_arbol (var raiz:pa_punt);
+implementation
+
+procedure agregar_adni(var raiz:pa_punt; x : p_dato;var pos:byte);
+begin
+
+if raiz = nil then
+begin
+new(raiz);
+raiz^.info:= x;
+raiz^.sai:= nil;
+raiz^.sad:= nil;
+raiz^.pos_r:= pos;
+end
+else if raiz^.info.dni > x.dni then agregar_adni(raiz^.sai,x,pos)
+else agregar_adni(raiz^.sad,x,pos)
+end;
+
+procedure agregar_ana(var raiz:pa_punt; x : p_dato;var pos:byte);
+begin
+if raiz = nil then
+begin
+new(raiz);
+raiz^.info:= x;
+raiz^.sai:= nil;
+raiz^.sad:= nil;
+raiz^.pos_r:=pos;
+end
+else if (raiz^.info.nombre + raiz^.info.apellido) > (x.nombre + x.apellido) then agregar_ana(raiz^.sai,x,pos)
+else agregar_ana(raiz^.sad,x,pos)
+end;
+
+procedure crear_arbol (var raiz:pa_punt);
+begin
+raiz:= nil;
+end;
+
+function eliminar_min (var raiz:pa_punt):p_dato;
+begin
+     if raiz^.sai = nil then
+     begin
+          eliminar_min := raiz^.info ;
+          raiz := raiz^.sad ;
+     end
+     else eliminar_min:=eliminar_min(raiz^.sai);
+end;
+
+procedure eliminar_pa (var raiz:pa_punt ; x:p_dato);
+begin
+     if raiz<>nil then
+     begin
+          if x<raiz^.info then
+          eliminar_pa(raiz^.sai,x);
+          else
+            if x>raiz^.info then
+                 eliminar_pa(raiz^.sad,x);
+            else
+                 if (raiz^.sai=nil) and (raiz^.sad=nil) then
+                      raiz:=nil;
+                 else
+                      if raiz^.sai = nil then
+                         raiz:=raiz^.sad;
+                      else
+                          if raiz^.sad = nil then
+                             raiz:=raiz^.sai;
+                          else
+                          raiz^.info:=eliminar_min(raiz^.sad);
+`     end;
+end;
+
+end.
+
+
