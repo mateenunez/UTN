@@ -1,0 +1,339 @@
+unit analizadorSintactico;
+
+
+interface
+
+uses
+  Classes, SysUtils,crt, ManejoConLista, analizadorLexico ;
+
+const
+  MaxProd = 6;
+
+type
+
+  //Definicion de TAS
+  TProduccion = record
+    elem:array[1..MaxProd]of tipoSimboloGramatical;
+    cant:0..MaxProd;
+    end;
+  TipoVariable = vPrograma..vBoolean; //subrangos de tiposimbologramatical
+  TipoTerminypesos = tProgram..PESOS;
+  TipoTAS = array [TipoVariable, TipoTerminypesos] of ^Tproduccion;     //TipoTAS es un puntero de Tproduccion
+
+  //Arbol de derivacion
+  TApuntNodo = ^TNodoArbol;
+  TipoHIjos = record
+    elem:array[1..MaxProd]of TApuntNodo;
+    cant:0..MaxProd;
+    end;
+  TNodoArbol = record
+    Simbolo:tipoSimboloGramatical;
+    lexema:string;
+    Hijos:TipoHIjos;
+    end;
+  //Definicion pila
+  TipoElemPila = record
+    Simbolo:tipoSimboloGramatical;
+    NodoArbol:TApuntNodo;
+    end;
+  TipoPila = record
+    elem:array[1..200]of TipoElemPila;
+    tope:0..200;
+    end;
+
+
+
+procedure analizadorPredictivo(ruta:string;Var Arbol:TApuntNodo;);
+procedure ASCargaTas(var TAS:tipoTAS;);
+
+
+implementation
+
+procedure analizadorPredictivo(ruta:string;Var Arbol:TApuntNodo;);
+
+begin
+     abrir_arch(CodigoFuente);
+     crear_lista(TablaSimbolos);
+     CargarPalabras(TablaSimbolos);
+end;
+
+procedure ASCargaTas(var TAS:tipoTAS;);
+var i,j:tipoSimboloGramatical;
+
+begin
+     for (i:= vPrograma to vBoolean) do
+       for (j:= tProgram to PESOS) do
+         TAS[I,J]:= nil; //Llenamos todas las celdas con nil
+
+     //Dar de alta las producciones
+     {vPrograma -> program id declaración begin cuerpo end}
+     new(TAS[vPrograma,tProgram])
+     TAS[vPrograma,tProgram]^.elem[1]:=tProgram;
+     TAS[vPrograma,tProgram]^.elem[2]:=tId;
+     TAS[vPrograma,tProgram]^.elem[3]:=vDeclaracion;
+     TAS[vPrograma,tProgram]^.elem[4]:=tBegin;
+     TAS[vPrograma,tProgram]^.elem[5]:=vCuerpo;
+     TAS[vPrograma,tProgram]^.elem[6]:=tEnd;
+     TAS[vPrograma,tProgram]^.cant:=6;
+     {vDeclaracion -> var variables}
+     new(TAS[vDeclaracion,tVar])
+     TAS[vDeclaracion,tVar]^.elem[1]:=tvar;
+     TAS[vDeclaracion,tVar]^.elem[2]:=vVariables;
+     TAS[vDeclaracion,tVar]^.cant:=2  ;
+     {vVariables -> epsilon }
+     new(TAS[vVariables,tBegin]);
+     TAS[vVariables,tBegin]^.cant:=0;
+     {vVariables -> ids = tipo variables}
+     new(TAS[vVariables,tId]);
+     TAS[vVariables,tId]^.elem[1]:=vIds;
+     TAS[vVariables,tId]^.elem[2]:=tAsignacion;
+     TAS[vVariables,tId]^.elem[3]:=vTipo;
+     TAS[vVariables,tId]^.elem[4]:=vVariables;
+     TAS[vVariables,tId]^.cant:=4;
+     {vIds -> id id2}
+     new(TAS[vIds,tId]);
+     TAS[vIds,tId]^.elem[1]:=tId;
+     TAS[vIds,tId]^.elem[2]:=vId2;
+     TAS[vIds,tId]^.cant:=2;
+     {vId2 -> , id id2}
+     new(TAS[vId2,tComa]);
+     TAS[vId2,tComa]^.elem[1]:=tComa;
+     TAS[vId2,tComa]^.elem[2]:=tId;
+     TAS[vId2,tComa]^.elem[3]:=vId2;
+     TAS[vId2,tComa]^.cant:=3;
+     {vId2 -> epsilon}
+     new(TAS[vId2,tAsignacion]);
+     TAS[vId2,tAsignacion]^.cant:=0;
+     {vTipo -> real;}
+     new(TAS[vTipo,tReal]);
+     TAS[vTipo,tReal]^.elem[1]:=tReal;
+     TAS[vTipo,tReal]^.elem[2]:=tPuntoyComa
+     {vTipo -> vector}
+     new(TAS[vTipo,tArray]);
+     TAS[vTipo,tArray]^.elem[1]:=vVector;
+     TAS[vTipo,tArray]^.cant:=1;
+     {vVector -> array[num];}
+     new(TAS[vVector,tArray]);
+     TAS[vVector,tArray]^.elem[1]:=tArray;
+     TAS[vVector,tArray]^.elem[2]:= tCorcheteA;
+     TAS[vVector,tArray]^.elem[3]:= vNum;
+     TAS[vVector,tArray]^.elem[4]:= tCorcheteC;
+     TAS[vVector,tArray]^.elem[5]:= tPuntoyComa;
+     TAS[vVector,tArray]^.cant:= 5;
+     {vCuerpo -> sent B}
+     new(TAS[vCuerpo,tId]);
+     TAS[vCuerpo,tId]^.elem[1]:=vSent;
+     TAS[vCuerpo,tId]^.elem[2]:=vB;
+     TAS[vCuerpo,tId]^.cant:=2;
+
+     new(TAS[vCuerpo,tIf]);
+     TAS[vCuerpo,tIf]^.elem[1]:=vSent;
+     TAS[vCuerpo,tIf]^.elem[2]:=vB;
+     TAS[vCuerpo,tIf]^.cant:=2;
+
+     new(TAS[vCuerpo,tWhile]);
+     TAS[vCuerpo,tWhile]^.elem[1]:=vSent;
+     TAS[vCuerpo,tWhile]^.elem[2]:=vB;
+     TAS[vCuerpo,tWhile]^.cant:=2;
+
+     new(TAS[vCuerpo,tFor]);
+     TAS[vCuerpo,tFor]^.elem[1]:=vSent;
+     TAS[vCuerpo,tFor]^.elem[2]:=vB;
+     TAS[vCuerpo,tFor]^.cant:=2;
+
+     new(TAS[vCuerpo,tCase]);
+     TAS[vCuerpo,tCase]^.elem[1]:=vSent;
+     TAS[vCuerpo,tCase]^.elem[2]:=vB;
+     TAS[vCuerpo,tCase]^.cant:=2;
+
+     new(TAS[vCuerpo,tRead]);
+     TAS[vCuerpo,tRead]^.elem[1]:=vSent;
+     TAS[vCuerpo,tRead]^.elem[2]:=vB;
+     TAS[vCuerpo,tRead]^.cant:=2;
+
+     new(TAS[vCuerpo,tWrite]);
+     TAS[vCuerpo,tWrite]^.elem[1]:=vSent;
+     TAS[vCuerpo,tWrite]^.elem[2]:=vB;
+     TAS[vCuerpo,tWrite]^.cant:=2;
+     {vB -> epsilon}
+     new(TAS[vB,tEnd]);
+     TAS[vB,tEnd]^.cant:=0;
+     {vB -> sent B}
+     new(TAS[vB,tId]);
+     TAS[vB,tId]^.elem[1]:=vSent;
+     TAS[vB,tId]^.elem[2]:=vB;
+     TAS[vB,tId]^.cant:=2;
+
+     new(TAS[vB,tIf]);
+     TAS[vB,tIf]^.elem[1]:=vSent;
+     TAS[vB,tIf]^.elem[2]:=vB;
+     TAS[vB,tIf]^.cant:=2;
+
+     new(TAS[vB,tWhile]);
+     TAS[vB,tWhile]^.elem[1]:=vSent;
+     TAS[vB,tWhile]^.elem[2]:=vB;
+     TAS[vB,tWhile]^.cant:=2;
+
+     new(TAS[vB,tFor]);
+     TAS[vB,tFor]^.elem[1]:=vSent;
+     TAS[vB,tFor]^.elem[2]:=vB;
+     TAS[vB,tFor]^.cant:=2;
+
+     new(TAS[vB,tCase]);
+     TAS[vB,tCase]^.elem[1]:=vSent;
+     TAS[vB,tCase]^.elem[2]:=vB;
+     TAS[vB,tCase]^.cant:=2;
+
+     new(TAS[vB,tRead]);
+     TAS[vB,tRead]^.elem[1]:=vSent;
+     TAS[vB,tRead]^.elem[2]:=vB;
+     TAS[vB,tRead]^.cant:=2;
+
+     new(TAS[vB,tWrite]);
+     TAS[vB,tWrite]^.elem[1]:=vSent;
+     TAS[vB,tWrite]^.elem[2]:=vB;
+     TAS[vB,tWrite]^.cant:=2;
+     {vSent ->  asignacion}
+     new(TAS[vSent,tId]);
+     TAS[vSent,tId]^.elem[1]:=vAsignacion;
+     TAS[vSent,tId]^.cant:=1;
+     {vSent ->  condicional}
+     new(TAS[vSent,tIf]);
+     TAS[vSent,tIf]^.elem[1]:=vCondicional;
+     TAS[vSent,tIf]^.cant:=1;
+     {vSent ->  ciclo}
+     new(TAS[vSent,tWhile]);
+     TAS[vSent,tWhile]^.elem[1]:=vCiclo;
+     TAS[vSent,tWhile]^.cant:=1
+
+     new(TAS[vSent,tFor]);
+     TAS[vSent,tFor]^.elem[1]:=vCiclo;
+     TAS[vSent,tFor]^.cant:=1;
+     {vSent ->  segun}
+     new(TAS[vSent,tCase]);
+     TAS[vSent,tCase]^.elem[1]:=vSegun;
+     TAS[vSent,tCase]^.cant:=1;
+     {vSent ->  read[id]}
+     new(TAS[vSent,tRead]);
+     TAS[vSent,tRead]^.elem[1]:=tRead;
+     TAS[vSent,tRead]^.elem[2]:=tCorcheteA;
+     TAS[vSent,tRead]^.elem[3]:=tId;
+     TAS[vSent,tRead]^.elem[4]:=tCorcheteC;
+     TAS[vSent,tRead]^.cant:=4;
+     {vSent ->  write[expArit]}
+     new(TAS[vSent,tWrite]);
+     TAS[vSent,tWrite]^.elem[1]:=tWrite;
+     TAS[vSent,tWrite]^.elem[2]:=tCorcheteA;
+     TAS[vSent,tWrite]^.elem[3]:=vExpArit;
+     TAS[vSent,tWrite]^.elem[4]:=tCorcheteC;
+     TAS[vSent,tWrite]^.cant:=4;
+     {vAsignacion -> id = expArit;}
+     new(TAS[vAsignacion,tId]);
+     TAS[vAsignacion,tId]^.elem[1]:=tId;
+     TAS[vAsignacion,tId]^.elem[2]:=tAsignacion;
+     TAS[vAsignacion,tId]^.elem[3]:=vExpArit;
+     TAS[vAsignacion,tId]^.elem[4]:=tPuntoyComa;
+     TAS[vAsignacion,tId]^.cant:=4;
+     {vExpArit -> MX}
+     new(TAS[vExpArit,tId]);
+     TAS[vExpArit,tId]^.elem[1]:=vM;
+     TAS[vExpArit,tId]^.elem[2]:=vX;
+     TAS[vExpArit,tId]^.cant:=2;
+
+     new(TAS[vExpArit,tParentesisA]);
+     TAS[vExpArit,tParentesisA]^.elem[1]:=vM;
+     TAS[vExpArit,tParentesisA]^.elem[2]:=vX;
+     TAS[vExpArit,tParentesisA]^.cant:=2;
+
+     new(TAS[vExpArit,tConst]);
+     TAS[vExpArit,tConst]^.elem[1]:=vM;
+     TAS[vExpArit,tConst]^.elem[2]:=vX;
+     TAS[vExpArit,tConst]^.cant:=2;
+     {vX -> epsilon}
+     new(TAS[vX,tPuntoyComa]);
+     TAS[vX,tPuntoyComa]^.cant:=0;
+     {vX -> epsilon}
+     new(TAS[vX,tCorcheteC]);
+     TAS[vX,tCorcheteC]^.cant:=0;
+     {vX -> epsilon}
+     new(TAS[vX,tParentesisC]);
+     TAS[vX,tParentesisC]^.cant:=0;
+     {vX -> RX}
+     new(TAS[vX,tSuma]);
+     TAS[vX,tSuma]^.elem[1]:=vR;
+     TAS[vX,tSuma]^.elem[2]:=vX;
+     TAS[vX,tSuma]^.cant:=2;
+     {vX -> RX}
+     new(TAS[vX,tResta]);
+     TAS[vX,tResta]^.elem[1]:=vR;
+     TAS[vX,tResta]^.elem[2]:=vX;
+     TAS[vX,tResta]^.cant:=2;
+     {vX -> epsilon}
+     new(TAS[vX,tOpRel]);
+     TAS[vX,tOpRel]^.cant:=0;
+     {vR -> +M}
+     new(TAS[vR,tSuma]);
+     TAS[vR,tSuma]^.elem[1]:=tSuma;
+     TAS[vR,tSuma]^.elem[2]:=vM;
+     TAS[vR,tSuma]^.cant:=2;
+     {vR -> -M}
+     new(TAS[vR,tResta]);
+     TAS[vR,tResta]^.elem[1]:=tResta;
+     TAS[vR,tResta]^.elem[2]:=vM;
+     TAS[vR,tResta]^.cant:=2;
+     {vM -> GT}
+     new(TAS[vM,tId]);
+     TAS[vM,tId]^.elem[1]:=vG;
+     TAS[vM,tId]^.elem[2]:=vT;
+     TAS[vM,tId]^.cant:=2;
+     {vM -> GT}
+     new(TAS[vM,tParentesisA]);
+     TAS[vM,tParentesisA]^.elem[1]:=vG;
+     TAS[vM,tParentesisA]^.elem[2]:=vT;
+     TAS[vM,tParentesisA]^.cant:=2;
+     {vM -> GT}
+     new(TAS[vM,tConst]);
+     TAS[vM,tConst]^.elem[1]:=vG;
+     TAS[vM,tConst]^.elem[2]:=vT;
+     TAS[vM,tConst]^.cant:=2;
+     {vT -> epsilon}
+     new(TAS[vT,tPuntoyComa]);
+     TAS[vT,tPuntoyComa]^.cant:=0;
+     {vT -> epsilon}
+     new(TAS[vT,tCorcheteC]);
+     TAS[vT,tCorcheteC]^.cant:=0;
+     {vT -> epsilon}
+     new(TAS[vT,tParentesisC]);
+     TAS[vT,tParentesisC]^.cant:=0;
+     {vT -> epsilon}
+     new(TAS[vT,tSuma]);
+     TAS[vT,tSuma]^.cant:=0;
+     {vT -> epsilon}
+     new(TAS[vT,tResta]);
+     TAS[vT,tResta]^.cant:=0;
+     {vT -> YT}
+     new(TAS[vT,tMult]);
+     TAS[vT,tMult]^.elem[1]:=vY;
+     TAS[vT,tMult]^.elem[2]:=vT;
+     TAS[vT,tMult]^.cant:=2;
+     {vT -> YT}
+     new(TAS[vT,tDiv]);
+     TAS[vT,tDiv]^.elem[1]:=vY;
+     TAS[vT,tDiv]^.elem[2]:=vT;
+     TAS[vT,tDiv]^.cant:=2;
+     {vT -> epsilon}
+     new(TAS[vT,tOpRel]);
+     TAS[vT,tOpRel]^.cant:=0;
+     {vY -> YT}
+     new(TAS[vT,tDiv]);
+     TAS[vT,tDiv]^.elem[1]:=vY;
+
+
+
+
+
+
+
+
+end.
+

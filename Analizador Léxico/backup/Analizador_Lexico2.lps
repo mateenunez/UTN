@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="Analizador_Lexico2.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ProgramaFinal"/>
+        <CursorPos X="84" Y="5"/>
+        <UsageCount Value="127"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="archivos.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Archivos"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="41" Y="7"/>
+        <UsageCount Value="125"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tabladesimbolos.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TablaDeSimbolos"/>
+        <EditorIndex Value="6"/>
+        <CursorPos X="22" Y="116"/>
+        <UsageCount Value="121"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="manejoconlista.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ManejoConLista"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="7"/>
+        <CursorPos X="113" Y="12"/>
+        <UsageCount Value="120"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="analizadorsintactico.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="analizadorSintactico"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="814"/>
+        <CursorPos X="23" Y="838"/>
+        <UsageCount Value="101"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="analizadorlexico.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="AnalizadorLexico"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="141"/>
+        <CursorPos X="43" Y="285"/>
+        <UsageCount Value="92"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="evaluador.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Evaluador"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="54"/>
+        <CursorPos X="3" Y="48"/>
+        <UsageCount Value="75"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="analizador_lexico.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="2"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\TRABAJO FINAL ALGORITMO\CATASTRO\MENU.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="3"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\TRABAJO FINAL ALGORITMO\CATASTRO\ARBOL_PERSONA.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="49" Y="80"/>
+        <UsageCount Value="3"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Desktop\Catastro\Catastro\backup\catastroarbol.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="2"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Desktop\Catastro\Catastro\archivoterrenos.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="13"/>
+        <CursorPos X="17" Y="4"/>
+        <UsageCount Value="2"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Desktop\Catastro\Catastro\archivopersonas.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="14"/>
+        <CursorPos Y="43"/>
+        <UsageCount Value="2"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\funcionamiento.pas"/>
+        <UnitName Value="Lexico"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\lexico.pas"/>
+        <UnitName Value="Lexico"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\lista.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\menu.pas"/>
+        <UnitName Value="Menu"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\presentadores.pas"/>
+        <UnitName Value="Presentadores"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\sintactico.pas"/>
+        <UnitName Value="Sintactico"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\Sintaxis.lpi"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="XML"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\Sintaxis.lpr"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\Sintaxis.lps"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="XML"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\datos.pas"/>
+        <UnitName Value="Datos"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="188"/>
+        <CursorPos X="18" Y="113"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\Mateo\Desktop\Codigo L\Codigo Sin Ejecutable\evaluador.pas"/>
+        <UnitName Value="Evaluador"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="25"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Analizador_Lexico2.lpi"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="XML"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Analizador_Lexico2.lps"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="XML"/>
+      </Unit>
+      <Unit>
+        <Filename Value="desktop.ini"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="Ini"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="27">
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="113" TopLine="98"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="127" TopLine="102"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="113" TopLine="102"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="127" TopLine="102"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="536" TopLine="522"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="227" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="228" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="255" Column="55" TopLine="237"/>
+      </Position>
+      <Position>
+        <Filename Value="analizadorsintactico.pas"/>
+        <Caret Line="512" Column="15" TopLine="494"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="537" Column="65" TopLine="514"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="159" Column="75" TopLine="119"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="118" Column="29" TopLine="103"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="158" Column="12" TopLine="145"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="27" Column="79" TopLine="12"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="26" Column="70" TopLine="11"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="7" Column="112"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="96" Column="16" TopLine="51"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="279" Column="21" TopLine="254"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="503" Column="29" TopLine="487"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="390" Column="29" TopLine="369"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="385" Column="2" TopLine="342"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="383" Column="40" TopLine="372"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="48" Column="32" TopLine="42"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="397" Column="16" TopLine="386"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="383" Column="36" TopLine="344"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="390" Column="17" TopLine="372"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="388" Column="8" TopLine="342"/>
+      </Position>
+      <Position>
+        <Filename Value="evaluador.pas"/>
+        <Caret Line="383" Column="2" TopLine="372"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+    <HistoryLists>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+    </HistoryLists>
+  </ProjectSession>
+</CONFIG>
