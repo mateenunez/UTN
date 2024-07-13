@@ -1,0 +1,247 @@
+/*No se debe permitir almacenar nuevos turnos de atención anteriores al día actual. Se debe mostrar un
+cartel que rece: “El turno tiene fecha anterior al día de hoy.” (sea en nuevos registros o actualizaciones).
+Tabla: Appointment*/
+CREATE OR REPLACE FUNCTION fn_trg_turno_ins_upd() RETURNS trigger AS
+$BODY$
+begin 
+if new.date >= current_date then 
+return new;
+else
+raise exception 'El turno tiene fecha anterior al día de hoy.';
+end if;
+end;
+$BODY$ language plpgsql;
+
+CREATE or replace TRIGGER trg_turno_ins_upd BEFORE INSERT ON appointment
+FOR EACH ROW EXECUTE PROCEDURE fn_trg_turno_ins_upd();
+
+/*Debe modificar el campo “gender” por “sex”, el campo no puede ser nulo, no debe permitirse tener
+nuevos registros o actualizaciones donde el campo quede en nulo. Valores permitidos “M”, “F”, “N/A”.
+Tabla: patient*/
+
+create domain sex_type as text check(value in ('M', 'F', 'N/A')) not null;
+
+CREATE OR REPLACE FUNCTION fn_trg_paciente_ins_upd() RETURNS trigger AS
+$BODY$
+begin 
+if new.sex in ('M', 'F', 'N/A') then 
+return new;
+else
+raise exception 'Se debe ingresar un sexo como M, F o N/A.';
+end if;
+end;
+$BODY$ language plpgsql;
+
+CREATE TRIGGER trg_paciente_ins_upd BEFORE INSERT OR UPDATE ON patient
+FOR EACH ROW EXECUTE PROCEDURE fn_trg_paciente_ins_upd();
+
+/*Agregar campo blood_type (tipos permitidos : A+, A-, B+, B-, AB+, AB-, O+, O-) y emergency_contact
+(es el número de teléfono en caso de emergencia)
+Tabla: patient*/
+
+create domain blood as text check(value in ('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'));
+create domain tel_type as text check (value ~ '^\d{7,15}$');
+
+alter table patient 
+add column blood_type blood;
+
+alter table patient 
+add column emergency_contact tel_type;
+
+
+/*Agregar un campo llamado status para indicar si la cita está agendada, completada o cancelada; los posibles estados son: Scheduled,
+Completed, Canceled. Esto debe ser obligatorio para cada turno nuevo. En cuanto a los turnos que ya se encuentran en la base de datos,
+realizar un proceso de carga de este campo siguiente la siguiente instrucción: si el turno es anterior al día 3/06/2024 ,
+indicar “Completed”, de otra forma indicar “Scheduled”. 
+Tabla: appointment*/
+
+create domain status_type as text check(value in ('Scheduled', 'Completed', 'Canceled'));
+
+alter table appointment add column status status_type;
+
+update appointment a set status = case 
+when (a.date < '2024-06-03') then 'Completed'
+else 'Scheduled' 
+end;
+
+alter table appointment alter column status set not null;
+
+/*Se debe aumentar la longitud del campo phone (a 20 caracteres) y se debe agregar una verificación para el formato del 
+número que se cargue. En caso de que el formato no sea adecuado, indicar un cartel que rece “Wrong phone number.”.
+Tablas: doctor , nurse.*/
+
+create domain phone_type as text check(
+	value ~ ('^\d{3}-\d{17}$'));
+
+alter table doctor alter column phone type varchar(20);
+alter table nurse alter column phone type varchar(20);
+
+create or replace function fn_trg_phone_ins_upd() returns trigger AS
+$BODY$
+begin 
+	if new.phone ~ ('^\d{3}-\d{16}$') then 
+	return new;
+else
+	raise exception 'Wrong phone number.';
+end if;
+end;
+$BODY$ language plpgsql;
+
+create trigger trg_phone_ins_upd after insert or update on doctor
+for each row execute procedure fn_trg_phone_ins_upd();
+
+create trigger trg_phone_ins_upd after insert or update on nurse
+for each row execute procedure fn_trg_phone_ins_upd();
+
+
+/*La tabla medication no tiene relación con la tabla supplier, se debe realizar una relación entre las mismas 
+(un medicamento un proveedor, un proveedor muchos medicamentos). Si el supplier_id de la tabla medicament no existe en la 
+tabla supplier: crear un registro “Others” en la tabla supplier y relacionar el medicamento a éste. 
+Realizar pruebas de inserción de un nuevo medicamento.
+Tablas: medication, supplier*/
+
+alter table medication add constraint fk_supplier_id foreign key (supplier_id) references supplier (supplier_id);
+
+insert into supplier (supplier_id,name) values (39,'Others');
+
+update medication set supplier_id = 39 where (supplier_id is null or supplier_id not in (select supplier_id from supplier));
+
+create or replace function fn_trg_medication_ins_upd() returns trigger as
+$BODY$
+begin 
+    if new.supplier_id not in (select supplier_id from supplier) then new.supplier_id := 39; 
+	end if;
+return new;
+end;
+$BODY$ language plpgsql;
+
+create or replace trigger trg_medication_ins_upd before insert on medication for each row execute procedure fn_trg_medication_ins_upd();
+
+insert into medication (medication_id,name,supplier_id) values (66,'Aspirina',50);
+
+/*Se debe crear una nueva tabla llamada: prescription, la misma almacenará las recetas que los médicos indican a los pacientes. 
+Esta tabla debe tener: 
+prescription_id (identificador de la receta) clave primaria y generación serial.
+patient_id (id de paciente)
+doctor_id (id de doctor)
+medication_id (id de medicación)
+prescription_date (fecha de la prescripción) 
+dosage (dosis) varchar de 100 no nulo
+frequency (frecuencia de toma) varchar de 50 no nulo
+start_date (fecha inicio de toma) formato fecha no nulo
+end_date (fecha fin de toma) formato fecha no nulo*/
+
+create table prescription (
+prescription_id serial,
+patient_id int,
+doctor_id int,
+medication_id int,
+prescription_date date,
+dosage varchar(100) not null,
+frequency varchar(50) not null,
+start_date date not null,
+end_date date not null,
+primary key (prescription_id),
+foreign key (patient_id) references patient (patient_id),
+foreign key (doctor_id) references doctor (doctor_id),
+foreign key (medication_id) references medication (medication_id)
+);
+
+/*Cuando se carga una nueva receta (prescription) se debe actualizar el stock del medicamento en la tabla “medication_inventory”.
+Para ello, se debe reducir en uno al campo quantity. Además, se debe actualizar el campo “last_updated” con en que se actualiza 
+éste registro. Si el registro del medicamento no existe: se debe crear en el momento. 
+Tablas: prescription, medication_inventory*/
+
+create or replace function fn_trg_prescription_ins() returns trigger AS
+$BODY$
+begin 
+IF not EXISTS (select 1 from medication_inventory m where (m.medication_id = new.medication_id)) then 
+insert into medication_inventory (medication_id, quantity, last_updated) 
+values (new.medication_id, (select m2.stock from medication m2 where new.medication_id=m2.medication_id), current_timestamp);
+end IF;
+UPDATE medication_inventory set quantity = quantity - 1, last_updated = current_timestamp 
+WHERE (medication_id = new.medication_id);
+UPDATE medication set stock = stock - 1
+WHERE (medication_id = new.medication_id);
+return new;
+end;
+$BODY$ language plpgsql;
+
+create or replace trigger trg_prescription_ins before insert on prescription
+for each row execute procedure fn_trg_prescription_ins();
+
+insert into prescription values (2, 6, 3, 30, '2024-07-01', 'Dosis', 'Una semana', '2024-07-01', '2024-07-07');
+
+/*Cuando se agrega un nuevo medicamento, se debe crear su registro de stock en la tabla “medication_inventory”, 
+tener presente actualizar el campo last_updated. 
+Tablas: medication, medication_inventory*/
+
+create or replace function fn_trg_newmedication_ins_upd() returns trigger as
+$BODY$
+begin 
+    insert into medication_inventory (medication_id, quantity, last_updated)
+    values (new.medication_id, (select m2.stock from medication m2 where new.medication_id=m2.medication_id), current_date);
+return new;
+end;
+$BODY$ language plpgsql;
+
+create or replace trigger trg_newmedication_ins_upd after insert on medication 
+for each row execute procedure fn_trg_newmedication_ins_upd();
+
+insert into medication values (67, 'Tafirol', 'Sin descripcion', 200, 5);
+
+/* Se debe unificar la información de la historia clínica de un paciente para que desde cualquier área del
+hospital se reciba la misma información. Para ello, crear una vista llamada patient_medical_history con la
+siguiente información:
+● id de paciente
+● nombre del paciente
+● apellido del paciente
+● nombre del doctor
+● apellido del doctor
+● descripción del diagnóstico
+● descripción del tratamiento
+● descripción del procedimiento
+● notas registro médico*/
+
+CREATE OR REPLACE VIEW patient_medical_history AS
+SELECT p.patient_id, p.first_name as NombrePaciente, p.last_name AS ApellidoPaciente, 
+d.first_name AS NombreDoctor, d.last_name AS ApellidoDoctor, di.description AS Diagnostico,t.description AS 
+Tratamiento,pr.description AS Procedimiento, mr.notes as Notas FROM patient p 
+JOIN medical_record mr ON (p.patient_id = mr.patient_id)
+LEFT JOIN diagnosis di ON (mr.diagnosis_id = di.diagnosis_id)
+LEFT JOIN treatment t ON (mr.treatment_id = t.treatment_id)
+LEFT JOIN procedure pr ON (mr.procedure_id = pr.procedure_id)
+LEFT JOIN doctor d ON (mr.doctor_id=d.doctor_id);
+
+SELECT * from patient_medical_history;
+
+/*Adicionalmente, se requieren los siguientes reportes:
+● Reporte de montos por aseguradora: se requiere un listado de las aseguradoras y los montos que
+deben afrontar por las facturas realizadas a los pacientes en toda la historia. Se necesita que el
+reporte contenga: id de la aseguradora, nombre de la aseguradora, cantidad de pacientes a que
+se les facturó, monto total facturado a la aseguradora.*/
+
+select i.insurance_id, i."name", count(distinct p.patient_id) as CantidadPacientes, sum(b.amount) as MontoTotal from 
+patient p join bill b on (b.patient_id = p.patient_id)
+join insurance i on (i.insurance_id = p.insurance_id)
+group by i.insurance_id;
+
+/*● Cantidad de turnos atendidos por doctor: se necesita un reporte donde se muestre la cantidad de
+de atenciones realizadas por cada doctor, agrupado a su vez por departamento del hospital;
+tómese todos los datos almacenados. El reporte debe contener: Nombre del departamento,
+nombre+apellido del doctor, cantidad de turnos atendidos.*/
+
+select d2."name", concat(d.first_name, ' ',d.last_name) as  Doctor, count(distinct a.appointment_id) as Cant_Turnos  from 
+appointment a join doctor d on a.doctor_id  = d.doctor_id 
+join department d2 on d2.department_id = d.department_id 
+group by d2.department_id, d.doctor_id;
+
+/*● Reporte de medicamentos a reponer: se requiere un listado de medicamentos que se encuentran
+con 5 unidades o menos. El reporte debe tener: id del medicamento, nombre del medicamento, id
+del proveedor, nombre del proveedor, cantidad actual, cantidad utilizada (de las prescripciones)*/
+
+select m.medication_id, m."name", s.supplier_id, s."name", m.stock, count(p.medication_id) from 
+medication m join supplier s on m.supplier_id = s.supplier_id
+join prescription p on p.medication_id = m.medication_id 
+where m.stock < 6
+group by m.medication_id, s.supplier_id;
